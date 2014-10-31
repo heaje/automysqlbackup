@@ -572,28 +572,28 @@ fullschema () {
   if (( $CONFIG_dryrun )); then
     case "${CONFIG_mysql_dump_compression}" in
 	'gzip')
-	  echo "dry-running: mysqldump --user=${CONFIG_mysql_dump_username} --password=${CONFIG_mysql_dump_password} --host=${CONFIG_mysql_dump_host} ${CONFIG_add_params} ${opt_fullschema[@]} | gzip_compression > ${1}${suffix}";
+	  echo "dry-running: mysqldump --user=${CONFIG_mysql_dump_username} --password=${CONFIG_mysql_dump_password} --host=${CONFIG_mysql_dump_host} ${opt_fullschema[@]} ${CONFIG_add_params} | gzip_compression > ${1}${suffix}";
 	  ;;
 	'bzip2')
-	  echo "dry-running: mysqldump --user=${CONFIG_mysql_dump_username} --password=${CONFIG_mysql_dump_password} --host=${CONFIG_mysql_dump_host} ${CONFIG_add_params} ${opt_fullschema[@]} | bzip2_compression > ${1}${suffix}";
+	  echo "dry-running: mysqldump --user=${CONFIG_mysql_dump_username} --password=${CONFIG_mysql_dump_password} --host=${CONFIG_mysql_dump_host} ${opt_fullschema[@]} ${CONFIG_add_params} | bzip2_compression > ${1}${suffix}";
 	  ;;
 	*)
-	  echo "dry-running: mysqldump --user=${CONFIG_mysql_dump_username} --password=${CONFIG_mysql_dump_password} --host=${CONFIG_mysql_dump_host} ${CONFIG_add_params} ${opt_fullschema[@]} > ${1}${suffix}";
+	  echo "dry-running: mysqldump --user=${CONFIG_mysql_dump_username} --password=${CONFIG_mysql_dump_password} --host=${CONFIG_mysql_dump_host} ${opt_fullschema[@]} ${CONFIG_add_params} > ${1}${suffix}";
 	  ;;
     esac
     return 0;
   else
     case "${CONFIG_mysql_dump_compression}" in
 	'gzip')
-	  mysqldump --user="${CONFIG_mysql_dump_username}" --password="${CONFIG_mysql_dump_password}" --host="${CONFIG_mysql_dump_host}" ${CONFIG_add_params} "${opt_fullschema[@]}" | gzip_compression > "${1}${suffix}";
+	  mysqldump --user="${CONFIG_mysql_dump_username}" --password="${CONFIG_mysql_dump_password}" --host="${CONFIG_mysql_dump_host}" "${opt_fullschema[@]}" ${CONFIG_add_params} | gzip_compression > "${1}${suffix}";
 	  return $?
 	  ;;
 	'bzip2')
-	  mysqldump --user="${CONFIG_mysql_dump_username}" --password="${CONFIG_mysql_dump_password}" --host="${CONFIG_mysql_dump_host}" ${CONFIG_add_params} "${opt_fullschema[@]}" | bzip2_compression > "${1}${suffix}";
+	  mysqldump --user="${CONFIG_mysql_dump_username}" --password="${CONFIG_mysql_dump_password}" --host="${CONFIG_mysql_dump_host}" "${opt_fullschema[@]}" ${CONFIG_add_params} | bzip2_compression > "${1}${suffix}";
 	  return $?
 	  ;;
 	*)
-	  mysqldump --user="${CONFIG_mysql_dump_username}" --password="${CONFIG_mysql_dump_password}" --host="${CONFIG_mysql_dump_host}" ${CONFIG_add_params} "${opt_fullschema[@]}" > "${1}${suffix}";
+	  mysqldump --user="${CONFIG_mysql_dump_username}" --password="${CONFIG_mysql_dump_password}" --host="${CONFIG_mysql_dump_host}" "${opt_fullschema[@]}" ${CONFIG_add_params} > "${1}${suffix}";
 	  return $?
 	  ;;
     esac
@@ -711,13 +711,13 @@ process_dbs() {
 		uid="${uid:-8:8}"
 		case "${CONFIG_mysql_dump_compression}" in
 		'gzip')
-		  mysqldump --user="${CONFIG_mysql_dump_username}" --password="${CONFIG_mysql_dump_password}" --host="${CONFIG_mysql_dump_host}" ${CONFIG_add_params} "${opt[@]}" "$@" | gzip_compression > "$cfname";
+		  mysqldump --user="${CONFIG_mysql_dump_username}" --password="${CONFIG_mysql_dump_password}" --host="${CONFIG_mysql_dump_host}" "${opt[@]}" ${CONFIG_add_params} "$@" | gzip_compression > "$cfname";
 		  ;;
 		'bzip2')
-		  mysqldump --user="${CONFIG_mysql_dump_username}" --password="${CONFIG_mysql_dump_password}" --host="${CONFIG_mysql_dump_host}" ${CONFIG_add_params} "${opt[@]}" "$@" | bzip2_compression > "$cfname";
+		  mysqldump --user="${CONFIG_mysql_dump_username}" --password="${CONFIG_mysql_dump_password}" --host="${CONFIG_mysql_dump_host}" "${opt[@]}" ${CONFIG_add_params} "$@" | bzip2_compression > "$cfname";
 		  ;;
 		*)
-		  mysqldump --user="${CONFIG_mysql_dump_username}" --password="${CONFIG_mysql_dump_password}" --host="${CONFIG_mysql_dump_host}" ${CONFIG_add_params} "${opt[@]}" "$@" > "$cfname";
+		  mysqldump --user="${CONFIG_mysql_dump_username}" --password="${CONFIG_mysql_dump_password}" --host="${CONFIG_mysql_dump_host}" "${opt[@]}" ${CONFIG_add_params} "$@" > "$cfname";
 		  ;;
 		esac
 		add_manifest_entry "$manifest_file" "$cfname" "$pid" "$db" && parse_manifest "$manifest_file" && cp -al "$cfname" "${CONFIG_backup_dir}"/latest/ && echo "Generated master backup $cfname" && return 0 || return 1
@@ -730,29 +730,29 @@ process_dbs() {
 		case "${CONFIG_mysql_dump_compression}" in
 		'gzip')
 		  if (( $filename_flags & $filename_flag_gz )); then
-			diff <(gzip_compression -dc "${manifest_latest_master_entry[0]}") <(mysqldump --user="${CONFIG_mysql_dump_username}" --password="${CONFIG_mysql_dump_password}" --host="${CONFIG_mysql_dump_host}" ${CONFIG_add_params} "${opt[@]}" "$@") | gzip_compression > "$cfname";
+			diff <(gzip_compression -dc "${manifest_latest_master_entry[0]}") <(mysqldump --user="${CONFIG_mysql_dump_username}" --password="${CONFIG_mysql_dump_password}" --host="${CONFIG_mysql_dump_host}" "${opt[@]}" ${CONFIG_add_params} "$@") | gzip_compression > "$cfname";
 		  elif (( $filename_flags & $filename_flag_bz2 )); then
-			diff <(bzip2_compression -dc "${manifest_latest_master_entry[0]}") <(mysqldump --user="${CONFIG_mysql_dump_username}" --password="${CONFIG_mysql_dump_password}" --host="${CONFIG_mysql_dump_host}" ${CONFIG_add_params} "${opt[@]}" "$@") | gzip_compression > "$cfname";
+			diff <(bzip2_compression -dc "${manifest_latest_master_entry[0]}") <(mysqldump --user="${CONFIG_mysql_dump_username}" --password="${CONFIG_mysql_dump_password}" --host="${CONFIG_mysql_dump_host}" "${opt[@]}" ${CONFIG_add_params} "$@") | gzip_compression > "$cfname";
 		  else
-			diff "${manifest_latest_master_entry[0]}" <(mysqldump --user="${CONFIG_mysql_dump_username}" --password="${CONFIG_mysql_dump_password}" --host="${CONFIG_mysql_dump_host}" ${CONFIG_add_params} "${opt[@]}" "$@") | gzip_compression > "$cfname";
+			diff "${manifest_latest_master_entry[0]}" <(mysqldump --user="${CONFIG_mysql_dump_username}" --password="${CONFIG_mysql_dump_password}" --host="${CONFIG_mysql_dump_host}" "${opt[@]}" ${CONFIG_add_params} "$@") | gzip_compression > "$cfname";
 		  fi
 		  ;;
 		'bzip2')
 		  if (( $filename_flags & $filename_flag_gz )); then
-			diff <(gzip_compression -dc "${manifest_latest_master_entry[0]}") <(mysqldump --user="${CONFIG_mysql_dump_username}" --password="${CONFIG_mysql_dump_password}" --host="${CONFIG_mysql_dump_host}" ${CONFIG_add_params} "${opt[@]}" "$@") | bzip2_compression > "$cfname";
+			diff <(gzip_compression -dc "${manifest_latest_master_entry[0]}") <(mysqldump --user="${CONFIG_mysql_dump_username}" --password="${CONFIG_mysql_dump_password}" --host="${CONFIG_mysql_dump_host}" "${opt[@]}" ${CONFIG_add_params} "$@") | bzip2_compression > "$cfname";
 		  elif (( $filename_flags & $filename_flag_bz2 )); then
-			diff <(bzip2_compression -dc "${manifest_latest_master_entry[0]}") <(mysqldump --user="${CONFIG_mysql_dump_username}" --password="${CONFIG_mysql_dump_password}" --host="${CONFIG_mysql_dump_host}" ${CONFIG_add_params} "${opt[@]}" "$@") | bzip2_compression > "$cfname";
+			diff <(bzip2_compression -dc "${manifest_latest_master_entry[0]}") <(mysqldump --user="${CONFIG_mysql_dump_username}" --password="${CONFIG_mysql_dump_password}" --host="${CONFIG_mysql_dump_host}" "${opt[@]}" ${CONFIG_add_params} "$@") | bzip2_compression > "$cfname";
 		  else
-			diff "${manifest_latest_master_entry[0]}" <(mysqldump --user="${CONFIG_mysql_dump_username}" --password="${CONFIG_mysql_dump_password}" --host="${CONFIG_mysql_dump_host}" ${CONFIG_add_params} "${opt[@]}" "$@") | bzip2_compression > "$cfname";
+			diff "${manifest_latest_master_entry[0]}" <(mysqldump --user="${CONFIG_mysql_dump_username}" --password="${CONFIG_mysql_dump_password}" --host="${CONFIG_mysql_dump_host}" "${opt[@]}" ${CONFIG_add_params} "$@") | bzip2_compression > "$cfname";
 		  fi
 		  ;;
 		*)
 		  if (( $filename_flags & $filename_flag_gz )); then
-			diff <(gzip_compression -dc "${manifest_latest_master_entry[0]}") <(mysqldump --user="${CONFIG_mysql_dump_username}" --password="${CONFIG_mysql_dump_password}" --host="${CONFIG_mysql_dump_host}" ${CONFIG_add_params} "${opt[@]}" "$@") > "$cfname";
+			diff <(gzip_compression -dc "${manifest_latest_master_entry[0]}") <(mysqldump --user="${CONFIG_mysql_dump_username}" --password="${CONFIG_mysql_dump_password}" --host="${CONFIG_mysql_dump_host}" "${opt[@]}" ${CONFIG_add_params} "$@") > "$cfname";
 		  elif (( $filename_flags & $filename_flag_bz2 )); then
-			diff <(bzip2_compression -dc "${manifest_latest_master_entry[0]}") <(mysqldump --user="${CONFIG_mysql_dump_username}" --password="${CONFIG_mysql_dump_password}" --host="${CONFIG_mysql_dump_host}" ${CONFIG_add_params} "${opt[@]}" "$@") > "$cfname";
+			diff <(bzip2_compression -dc "${manifest_latest_master_entry[0]}") <(mysqldump --user="${CONFIG_mysql_dump_username}" --password="${CONFIG_mysql_dump_password}" --host="${CONFIG_mysql_dump_host}" "${opt[@]}" ${CONFIG_add_params} "$@") > "$cfname";
 		  else
-			diff "${manifest_latest_master_entry[0]}" <(mysqldump --user="${CONFIG_mysql_dump_username}" --password="${CONFIG_mysql_dump_password}" --host="${CONFIG_mysql_dump_host}" ${CONFIG_add_params} "${opt[@]}" "$@") > "$cfname";
+			diff "${manifest_latest_master_entry[0]}" <(mysqldump --user="${CONFIG_mysql_dump_username}" --password="${CONFIG_mysql_dump_password}" --host="${CONFIG_mysql_dump_host}" "${opt[@]}" ${CONFIG_add_params} "$@") > "$cfname";
 		  fi
 		  ;;
 		esac
@@ -766,28 +766,28 @@ process_dbs() {
 	  if (( $CONFIG_dryrun )); then
 		case "${CONFIG_mysql_dump_compression}" in
 		'gzip')
-		  echo "dry-running: mysqldump --user=${CONFIG_mysql_dump_username} --password=${CONFIG_mysql_dump_password} --host=${CONFIG_mysql_dump_host} ${CONFIG_add_params} ${opt[@]} $@ | gzip_compression > ${cfname}"
+		  echo "dry-running: mysqldump --user=${CONFIG_mysql_dump_username} --password=${CONFIG_mysql_dump_password} --host=${CONFIG_mysql_dump_host} ${opt[@]} ${CONFIG_add_params} $@ | gzip_compression > ${cfname}"
 		  ;;
 		'bzip2')
-		  echo "dry-running: mysqldump --user=${CONFIG_mysql_dump_username} --password=${CONFIG_mysql_dump_password} --host=${CONFIG_mysql_dump_host} ${CONFIG_add_params} ${opt[@]} $@ | bzip2_compression > ${cfname}"
+		  echo "dry-running: mysqldump --user=${CONFIG_mysql_dump_username} --password=${CONFIG_mysql_dump_password} --host=${CONFIG_mysql_dump_host} ${opt[@]} ${CONFIG_add_params} $@ | bzip2_compression > ${cfname}"
 		  ;;
 		*)
-		  echo "dry-running: mysqldump --user=${CONFIG_mysql_dump_username} --password=${CONFIG_mysql_dump_password} --host=${CONFIG_mysql_dump_host} ${CONFIG_add_params} ${opt[@]} $@ > ${cfname}"
+		  echo "dry-running: mysqldump --user=${CONFIG_mysql_dump_username} --password=${CONFIG_mysql_dump_password} --host=${CONFIG_mysql_dump_host} ${opt[@]} ${CONFIG_add_params} $@ > ${cfname}"
 		  ;;
 		esac
 		return 0;
 	  else
 		case "${CONFIG_mysql_dump_compression}" in
 		'gzip')
-		  mysqldump --user="${CONFIG_mysql_dump_username}" --password="${CONFIG_mysql_dump_password}" --host="${CONFIG_mysql_dump_host}" ${CONFIG_add_params} "${opt[@]}" "$@" | gzip_compression > "${cfname}"
+		  mysqldump --user="${CONFIG_mysql_dump_username}" --password="${CONFIG_mysql_dump_password}" --host="${CONFIG_mysql_dump_host}" "${opt[@]}" ${CONFIG_add_params} "$@" | gzip_compression > "${cfname}"
 		  ret=$?
 		  ;;
 		'bzip2')
-		  mysqldump --user="${CONFIG_mysql_dump_username}" --password="${CONFIG_mysql_dump_password}" --host="${CONFIG_mysql_dump_host}" ${CONFIG_add_params} "${opt[@]}" "$@" | bzip2_compression > "${cfname}"
+		  mysqldump --user="${CONFIG_mysql_dump_username}" --password="${CONFIG_mysql_dump_password}" --host="${CONFIG_mysql_dump_host}" "${opt[@]}" ${CONFIG_add_params} "$@" | bzip2_compression > "${cfname}"
 		  ret=$?
 		  ;;
 		*)
-		  mysqldump --user="${CONFIG_mysql_dump_username}" --password="${CONFIG_mysql_dump_password}" --host="${CONFIG_mysql_dump_host}" ${CONFIG_add_params} "${opt[@]}" "$@" > "${cfname}"
+		  mysqldump --user="${CONFIG_mysql_dump_username}" --password="${CONFIG_mysql_dump_password}" --host="${CONFIG_mysql_dump_host}" "${opt[@]}" ${CONFIG_add_params} "$@" > "${cfname}"
 		  ret=$?
 		  ;;
 		esac
