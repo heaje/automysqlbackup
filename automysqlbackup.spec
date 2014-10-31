@@ -13,7 +13,7 @@ BuildArch: noarch
 AutoMySQLBackup with a basic configuration will create Daily, Weekly and Monthly backups of one or more of your MySQL databases from one or more of your MySQL servers.
 
 %prep
-%setup -q -n .
+%setup -c -q
 
 %build
 
